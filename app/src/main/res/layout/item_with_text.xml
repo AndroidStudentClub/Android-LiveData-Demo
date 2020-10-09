@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp"
-    android:layout_marginLeft="4dp"
-    android:layout_marginEnd="4dp"
-    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="8dp"
     android:orientation="vertical"
+    tools:background="#000000"
     tools:ignore="RtlHardcoded">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="130dp"
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_preview"
+        android:layout_width="match_parent"
         android:layout_height="170dp"
-        app:cardCornerRadius="16dp">
-
-        <ImageView
-            android:id="@+id/image_preview"
-            android:layout_width="130dp"
-            android:layout_height="170dp"
-            android:scaleType="centerCrop" />
-    </androidx.cardview.widget.CardView>
+        android:layout_marginBottom="16dp"
+        android:background="@color/colorAccent"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent" />
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="96dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/image_preview"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="4dp"
+        android:layout_toLeftOf="@id/movie_rating"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="#FFFFFF"
@@ -40,8 +40,10 @@
         style="@style/Base.Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/image_preview"
+        android:layout_alignParentEnd="true"
         android:isIndicator="true"
         android:numStars="5"
         android:progressBackgroundTint="@color/colorControlNormal"
         android:stepSize="0.5" />
-</LinearLayout>
+</RelativeLayout>

@@ -40,56 +40,9 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val movies = response.body()!!.results
                 // Передаем результат в adapter и отображаем элементы
-                val moviesList = listOf(
-                    MainCardContainer(
-                        R.string.recommended,
-                        {},
-                        movies.map { MovieItem(it) }.toList()
-                    )
-                )
+                val moviesList = movies.map { MovieItem(it) }.toList()
 
                 movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, t: Throwable) {
-                // Логируем ошибку
-                Log.e(TAG, t.toString())
-            }
-        })
-
-        val getTopRated = MovieApiClient.apiClient.getTopRatedMovies(API_KEY, "ru")
-
-        getTopRated.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>, response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()!!.results
-                // Передаем результат в adapter и отображаем элементы
-                val moviesList = listOf(
-                    MainCardContainer(R.string.popular, {}, movies.map { MovieItem(it) }.toList())
-                )
-                adapter.apply { addAll(moviesList) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, t: Throwable) {
-                // Логируем ошибку
-                Log.e(TAG, t.toString())
-            }
-        })
-
-        val getUpcoming = MovieApiClient.apiClient.getUpcomingMovies(API_KEY, "ru")
-
-        getUpcoming.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>, response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()!!.results
-                // Передаем результат в adapter и отображаем элементы
-                val moviesList = listOf(
-                    MainCardContainer(R.string.upcoming, {}, movies.map { MovieItem(it) }.toList())
-                )
-
-                adapter.apply { addAll(moviesList) }
             }
 
             override fun onFailure(call: Call<MoviesResponse>, t: Throwable) {
