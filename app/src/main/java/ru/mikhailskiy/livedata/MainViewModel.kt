@@ -16,16 +16,17 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
     private var debouncePeriod: Long = 500
     private var searchJob: Job? = null
 
+    // 1. Создаём MutableLiveData для передачи данных в View
     val searchMoviesLiveData = MutableLiveData<List<Movie>>()
 
     fun onFragmentReady() {
         //TODO Fetch Popular Movies
     }
 
+    // 2. Вызывается из View для передачи строки поиска в сетевой запрос
     fun onSearchQuery(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            Log.d("W7", Thread.currentThread().name)
             delay(debouncePeriod)
             if (query.length > 2) {
                 fetchMovieByQuery(query)
@@ -40,9 +41,9 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
         }
     }
 
+    // 3. Используя query обращаемся к репозиторию для поиска фильмов
     private fun fetchMovieByQuery(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("W7 IO", Thread.currentThread().name)
             val movies = repository.findMoviesByQuery(query)
             searchMoviesLiveData.postValue(movies)
         }
@@ -52,6 +53,7 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
         // TODO handle navigation to details screen event
     }
 
+    // Вызывается для очищения ресурсов
     override fun onCleared() {
         super.onCleared()
         searchJob?.cancel()

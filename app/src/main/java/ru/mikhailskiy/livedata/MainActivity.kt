@@ -34,21 +34,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 1. Создание mainViewModelFactory, используя фабрику и передав в конструктор репозиторий
         val mainViewModelFactory = MainViewModelFactory(MovieRepository())
+        // 2. Создание ViewModel, используя провайдер и передав экземпляр фабрики
         mainViewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
+        // 3. После того, как текст изменился - вызываем метод ViewModel
         search_toolbar.search_edit_text.afterTextChanged { it ->
             mainViewModel.onSearchQuery(it.toString())
         }
 
+        // 4. Подписываемся на LiveData для получения результатов
         mainViewModel.searchMoviesLiveData.observe(this, Observer { list ->
             val moviesList = list.map { MovieItem(it) }.toList()
+            // 5. Обновляем UI
             movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
         })
     }
 }
 
-class MainViewModelFactory(val repository: MovieRepository) : ViewModelProvider.Factory {
+class MainViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {

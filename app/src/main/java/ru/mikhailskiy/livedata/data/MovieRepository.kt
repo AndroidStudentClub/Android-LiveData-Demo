@@ -1,10 +1,7 @@
 package ru.mikhailskiy.livedata.data
 
-import android.util.Log
 import ru.mikhailskiy.livedata.BuildConfig
-import ru.mikhailskiy.livedata.MainActivity
 import ru.mikhailskiy.livedata.network.MovieApiClient
-import ru.mikhailskiy.livedata.network.MovieApiInterface
 
 class MovieRepository {
 
@@ -17,7 +14,6 @@ class MovieRepository {
 
     suspend fun findMoviesByQuery(queryText: String): List<Movie>? {
         val deferredResponse = MovieApiClient.apiClient.findMovies(BuildConfig.THE_MOVIE_DATABASE_API, queryText)
-
         return deferredResponse.results
     }
 }
