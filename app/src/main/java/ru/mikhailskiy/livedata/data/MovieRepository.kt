@@ -1,23 +1,22 @@
 package ru.mikhailskiy.livedata.data
 
-import android.util.Log
+import io.reactivex.Single
 import ru.mikhailskiy.livedata.BuildConfig
-import ru.mikhailskiy.livedata.MainActivity
 import ru.mikhailskiy.livedata.network.MovieApiClient
-import ru.mikhailskiy.livedata.network.MovieApiInterface
 
 class MovieRepository {
 
-    suspend fun fetchNowPlayingMovies(): List<Movie>? {
+    fun fetchNowPlayingMovies(): Single<List<Movie>> {
         val deferredResponse =
             MovieApiClient.apiClient.getNowPlayingMovies(BuildConfig.THE_MOVIE_DATABASE_API, "ru")
 
-        return deferredResponse.results
+        return deferredResponse.map { it.results }
     }
 
-    suspend fun findMoviesByQuery(queryText: String): List<Movie>? {
-        val deferredResponse = MovieApiClient.apiClient.findMovies(BuildConfig.THE_MOVIE_DATABASE_API, queryText)
+    fun findMoviesByQuery(queryText: String): Single<List<Movie>> {
+        val deferredResponse =
+            MovieApiClient.apiClient.findMovies(BuildConfig.THE_MOVIE_DATABASE_API, queryText)
 
-        return deferredResponse.results
+        return deferredResponse.map { it.results }
     }
 }

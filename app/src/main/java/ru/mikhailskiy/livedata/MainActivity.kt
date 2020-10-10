@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class MainViewModelFactory(val repository: MovieRepository) : ViewModelProvider.Factory {
+class MainViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {

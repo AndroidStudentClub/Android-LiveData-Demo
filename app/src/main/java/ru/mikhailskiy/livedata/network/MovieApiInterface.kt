@@ -1,6 +1,7 @@
 package ru.mikhailskiy.livedata.network
 
 
+import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -11,13 +12,16 @@ import ru.mikhailskiy.livedata.data.MoviesResponse
 interface MovieApiInterface {
 
     @GET("movie/now_playing")
-    suspend fun getNowPlayingMovies(
+    fun getNowPlayingMovies(
         @Query("api_key") apiKey: String,
         @Query("language") language: String
-    ): MoviesResponse
+    ): Single<MoviesResponse>
 
     @GET("search/movie")
-    suspend fun  findMovies(        @Query("api_key") apiKey: String,@Query("query") query: String): MoviesResponse
+    fun findMovies(
+        @Query("api_key") apiKey: String,
+        @Query("query") query: String
+    ): Single<MoviesResponse>
 
     @GET("movie/popular")
     fun getTopRatedMovies(
