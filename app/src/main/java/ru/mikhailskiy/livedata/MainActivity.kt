@@ -3,6 +3,7 @@ package ru.mikhailskiy.livedata
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -20,9 +21,10 @@ import ru.mikhailskiy.livedata.adapters.MovieItem
 import ru.mikhailskiy.livedata.data.MovieRepository
 import ru.mikhailskiy.livedata.data.MoviesResponse
 import ru.mikhailskiy.livedata.network.MovieApiClient
+import ru.mikhailskiy.livedata.ui.DataLoadingState
 import ru.mikhailskiy.livedata.ui.afterTextChanged
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
 
         // 1. Создание mainViewModelFactory, используя фабрику и передав в конструктор репозиторий
         val mainViewModelFactory = MainViewModelFactory(MovieRepository())
@@ -48,9 +50,21 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.searchMoviesLiveData.observe(this, Observer { list ->
             val moviesList = list.map { MovieItem(it) }.toList()
             // 5. Обновляем UI
+            // Необходимо очистить адаптер
+            adapter.clear()
             movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
         })
+
+        mainViewModel.movieLoadingStateLiveData.observe(this, Observer {
+            onMovieLoadingStateChanged(it)
+        })
     }
+
+    private fun onMovieLoadingStateChanged(state: DataLoadingState) {
+        progress_circular.visibility =
+            if (state == DataLoadingState.LOADING) View.VISIBLE else View.GONE
+    }
+
 }
 
 class MainViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {

@@ -27,12 +27,29 @@
         android:layout_marginBottom="32dp"
         app:hint="@string/search_hint" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movies_recycler_view"
+    <!-- Создание общего контейнера для отображения ProgressBar -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/list_background"
-        android:paddingTop="32dp"
-        android:scrollbars="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/movies_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/list_background"
+            android:paddingTop="32dp"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <!-- Добавление ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:theme="@style/CircularProgress"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 </LinearLayout>
