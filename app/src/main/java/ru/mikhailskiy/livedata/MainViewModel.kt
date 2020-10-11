@@ -1,9 +1,7 @@
 package ru.mikhailskiy.livedata
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import ru.mikhailskiy.livedata.data.Movie
 import ru.mikhailskiy.livedata.data.MovieRepository
@@ -17,7 +15,17 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
     val movieLoadingStateLiveData = MutableLiveData<DataLoadingState>()
 
     // 1. Создаём MutableLiveData для передачи данных в View
-    val searchMoviesLiveData = MutableLiveData<List<Movie>>()
+    var searchMoviesLiveData: LiveData<List<Movie>>
+
+    private val _searchFieldTextLiveData = MutableLiveData<String>()
+    private val _popularMoviesLiveData = MutableLiveData<List<Movie>>()
+
+    //3
+    init {
+        searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
+            fetchMovieByQuery(it)
+        }
+    }
 
     fun onFragmentReady() {
         //TODO Fetch Popular Movies
@@ -29,20 +37,27 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
         searchJob = viewModelScope.launch {
             delay(debouncePeriod)
             if (query.length > 2) {
-                fetchMovieByQuery(query)
+                _searchFieldTextLiveData.value = query
             }
         }
     }
 
-    private fun fetchPopularMovies() {
+
+    private fun fetchNowPlayingMovies() {
+        movieLoadingStateLiveData.value = DataLoadingState.LOADING
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = repository.fetchNowPlayingMovies()
-            searchMoviesLiveData.postValue(movies)
+            try {
+                val movies = repository.fetchNowPlayingMovies()
+                _popularMoviesLiveData.postValue(movies)
+                movieLoadingStateLiveData.postValue(DataLoadingState.LOADED)
+            } catch (e: Exception) {
+                movieLoadingStateLiveData.postValue(DataLoadingState.ERROR)
+            }
         }
     }
 
-    // 3. Используя query обращаемся к репозиторию для поиска фильмов
-    private fun fetchMovieByQuery(query: String) {
+    private fun fetchMovieByQuery(query: String): LiveData<List<Movie>> {
+        val liveData = MutableLiveData<List<Movie>>()
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // 1 setValue c помощью которого мы отправляем статус о загрузке через LiveData можно вызывать только UI-потоке
@@ -52,7 +67,7 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
                 }
 
                 val movies = repository.findMoviesByQuery(query)
-                searchMoviesLiveData.postValue(movies)
+                liveData.postValue(movies)
 
                 // 2 После того, как запрос выполнится - оповещаем UI о том, что
                 // загрузка выполнилась
@@ -62,7 +77,9 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
                 movieLoadingStateLiveData.postValue(DataLoadingState.ERROR)
             }
         }
+        return liveData
     }
+
 
     fun onMovieClicked(movie: Movie) {
         // TODO handle navigation to details screen event
