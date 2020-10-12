@@ -40,7 +40,9 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
     }
 
     fun getNowPlayingMovies() {
-        fetchNowPlayingMovies()
+        if (_popularMoviesLiveData.value.isNullOrEmpty()) {
+            fetchNowPlayingMovies()
+        }
     }
 
     // 2. Вызывается из View для передачи строки поиска в сетевой запрос
