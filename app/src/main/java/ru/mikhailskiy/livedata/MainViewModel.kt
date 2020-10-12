@@ -14,21 +14,33 @@ class MainViewModel(private val repository: MovieRepository) : ViewModel() {
 
     val movieLoadingStateLiveData = MutableLiveData<DataLoadingState>()
 
+
     // 1. Создаём MutableLiveData для передачи данных в View
-    var searchMoviesLiveData: LiveData<List<Movie>>
+    private lateinit var _searchMoviesLiveData: LiveData<List<Movie>>
 
     private val _searchFieldTextLiveData = MutableLiveData<String>()
     private val _popularMoviesLiveData = MutableLiveData<List<Movie>>()
 
-    //3
+    val moviesMediatorData = MediatorLiveData<List<Movie>>()
+
     init {
-        searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
+        _searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
             fetchMovieByQuery(it)
+        }
+
+        // 1
+        moviesMediatorData.addSource(_popularMoviesLiveData) {
+            moviesMediatorData.value = it
+        }
+
+        // 2
+        moviesMediatorData.addSource(_searchMoviesLiveData) {
+            moviesMediatorData.value = it
         }
     }
 
-    fun onFragmentReady() {
-        //TODO Fetch Popular Movies
+    fun getNowPlayingMovies() {
+        fetchNowPlayingMovies()
     }
 
     // 2. Вызывается из View для передачи строки поиска в сетевой запрос

@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         // 1. Создание mainViewModelFactory, используя фабрику и передав в конструктор репозиторий
         val mainViewModelFactory = MainViewModelFactory(MovieRepository())
         // 2. Создание ViewModel, используя провайдер и передав экземпляр фабрики
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
 
         // 4. Подписываемся на LiveData для получения результатов
-        mainViewModel.searchMoviesLiveData.observe(this, Observer { list ->
+        mainViewModel.moviesMediatorData.observe(this, Observer { list ->
             val moviesList = list.map { MovieItem(it) }.toList()
             // 5. Обновляем UI
             // Необходимо очистить адаптер
@@ -55,15 +54,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
         })
 
+        mainViewModel.getNowPlayingMovies()
+
         mainViewModel.movieLoadingStateLiveData.observe(this, Observer {
             onMovieLoadingStateChanged(it)
         })
     }
 
+
     private fun onMovieLoadingStateChanged(state: DataLoadingState) {
         progress_circular.visibility =
             if (state == DataLoadingState.LOADING) View.VISIBLE else View.GONE
     }
+
 
 }
 
