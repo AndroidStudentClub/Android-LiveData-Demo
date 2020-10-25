@@ -5,24 +5,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ru.mikhailskiy.livedata.adapters.MainCardContainer
 import ru.mikhailskiy.livedata.adapters.MovieItem
 import ru.mikhailskiy.livedata.data.MovieRepository
-import ru.mikhailskiy.livedata.data.MoviesResponse
-import ru.mikhailskiy.livedata.network.MovieApiClient
+import ru.mikhailskiy.livedata.data.network.MovieApiInterface
+import ru.mikhailskiy.livedata.domain.usecase.MovieRemoteUseCase
+import ru.mikhailskiy.livedata.domain.usecase.MovieUseCase
 import ru.mikhailskiy.livedata.ui.DataLoadingState
 import ru.mikhailskiy.livedata.ui.afterTextChanged
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -31,14 +30,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
     private lateinit var mainViewModel: MainViewModel
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+//    @Inject lateinit var car: Car
+
+    @Inject
+    lateinit var useCase: MovieUseCase
+
+    @Inject
+    lateinit var useCaseRemote: MovieRemoteUseCase
+
+//    @Inject lateinit var movieApiInterface: MovieApiInterface
+
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. Создание mainViewModelFactory, используя фабрику и передав в конструктор репозиторий
-        val mainViewModelFactory = MainViewModelFactory(MovieRepository())
+        (application as DemoApp).component.inject(this)
         // 2. Создание ViewModel, используя провайдер и передав экземпляр фабрики
-        mainViewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         // 3. После того, как текст изменился - вызываем метод ViewModel
         search_toolbar.search_edit_text.afterTextChanged { it ->
@@ -59,8 +70,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         mainViewModel.movieLoadingStateLiveData.observe(this, Observer {
             onMovieLoadingStateChanged(it)
         })
-    }
 
+        val movies = useCaseRemote.getMovies()
+        movies
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Log.d("W7", it?.let { it.toString() } ?: "null")
+            }, {
+                Log.d("W7", it.toString())
+            })
+    }
 
     private fun onMovieLoadingStateChanged(state: DataLoadingState) {
         progress_circular.visibility =
@@ -68,14 +88,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
 
-}
-
-class MainViewModelFactory(private val repository: MovieRepository) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

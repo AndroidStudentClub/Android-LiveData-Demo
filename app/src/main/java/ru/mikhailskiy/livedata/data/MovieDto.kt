@@ -3,7 +3,7 @@ package ru.mikhailskiy.livedata.data
 
 import com.google.gson.annotations.SerializedName
 
-class Movie(
+class MovieDto(
     posterPath: String,
     @SerializedName("adult")
     var isAdult: Boolean,

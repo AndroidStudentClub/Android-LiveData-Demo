@@ -1,4 +1,4 @@
-package ru.mikhailskiy.livedata.network.logger;
+package ru.mikhailskiy.livedata.data.network.logger;
 
 import android.util.Log;
 

@@ -8,10 +8,10 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import ru.mikhailskiy.livedata.R
-import ru.mikhailskiy.livedata.data.Movie
+import ru.mikhailskiy.livedata.data.MovieDto
 
 class MoviesAdapter(
-    private val movies: List<Movie>,
+    private val movies: List<MovieDto>,
     private val rowLayout: Int
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
 

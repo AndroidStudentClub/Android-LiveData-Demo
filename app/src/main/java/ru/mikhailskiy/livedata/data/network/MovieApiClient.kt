@@ -1,11 +1,11 @@
-package ru.mikhailskiy.livedata.network
+package ru.mikhailskiy.livedata.data.network
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.mikhailskiy.livedata.network.logger.CustomHttpLogging
+import ru.mikhailskiy.livedata.data.network.logger.CustomHttpLogging
 
 object MovieApiClient {
 

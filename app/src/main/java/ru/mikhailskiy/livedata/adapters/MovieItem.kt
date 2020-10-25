@@ -5,9 +5,9 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.item_with_text.*
 import ru.mikhailskiy.livedata.R
-import ru.mikhailskiy.livedata.data.Movie
+import ru.mikhailskiy.livedata.data.MovieDto
 
-class MovieItem(private val content: Movie) : Item() {
+class MovieItem(private val content: MovieDto) : Item() {
 
     override fun getLayout() = R.layout.item_with_text
 
