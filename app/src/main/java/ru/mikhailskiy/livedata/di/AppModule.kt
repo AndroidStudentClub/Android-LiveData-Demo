@@ -15,6 +15,10 @@ import ru.mikhailskiy.livedata.data.database.MovieDatabase
 import ru.mikhailskiy.livedata.data.network.MovieApiClient
 import ru.mikhailskiy.livedata.data.network.MovieApiClient.BASE_URL
 import ru.mikhailskiy.livedata.data.network.MovieApiInterface
+import ru.mikhailskiy.livedata.data.repository.FakeRemoteRepository
+import ru.mikhailskiy.livedata.data.repository.MovieLocalRepository
+import ru.mikhailskiy.livedata.domain.usecase.MovieInterface
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -60,6 +64,21 @@ class AppModule(val appContext: DemoApp) {
     @Provides
     fun provideUserDao(db: MovieDatabase): MovieDao {
         return db.movieDao()
+    }
+
+
+    @Singleton
+    @Named("local")
+    @Provides
+    fun provideLocalRepository(dao: MovieDao): MovieInterface {
+        return MovieLocalRepository(dao)
+    }
+
+    @Singleton
+    @Named("fake")
+    @Provides
+    fun provideFakeRepository(api: MovieApiInterface): MovieInterface {
+        return FakeRemoteRepository(api)
     }
 
 

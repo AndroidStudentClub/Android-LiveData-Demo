@@ -5,12 +5,21 @@ import ru.mikhailskiy.livedata.data.MovieDto
 import ru.mikhailskiy.livedata.data.database.Movie
 import ru.mikhailskiy.livedata.data.database.MovieDao
 import ru.mikhailskiy.livedata.data.network.MovieApiInterface
+import ru.mikhailskiy.livedata.domain.usecase.MovieInterface
 import javax.inject.Inject
 
-class MovieRepository @Inject constructor(private val dao: MovieDao) {
+class MovieLocalRepository @Inject constructor(private val dao: MovieDao):MovieInterface{
 
-    fun getMovies(): List<Movie> {
+    override fun getMovies(): List<Movie> {
         return dao.getMovies()
+    }
+
+}
+
+class FakeRemoteRepository @Inject constructor(private val api: MovieApiInterface):MovieInterface {
+
+    override fun getMovies(): List<Movie> {
+        return listOf()
     }
 
 }
